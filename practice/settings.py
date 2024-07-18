@@ -76,12 +76,15 @@ WSGI_APPLICATION = 'practice.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': '/home/dipkorimon/practice/my.cnf'
-        }
+        'ENGINE': 'django.db.backends.dummy',
+        # 'OPTIONS': {
+        #     'read_default_file': '/home/dipkorimon/practice/my.cnf'
+        # }
     }
 }
+
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://dipkorimon:password@127.0.0.1/mydb"
+
 
 
 # Password validation

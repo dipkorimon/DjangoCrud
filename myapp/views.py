@@ -1,40 +1,44 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Book
-from .forms import BookForm
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from .models_sqlalchemy import Book, session
 
-# Create your views here.
 def book_list(request):
-  books = Book.objects.all()
+  books = session.query(Book).all()
   return render(request, 'books/book_list.html', {'books': books})
 
 def book_detail(request, pk):
-  book = get_object_or_404(Book, pk = pk)
+  book = session.query(Book).get(pk)
   return render(request, 'books/book_detail.html', {'book': book})
 
 def book_create(request):
-    if request.method == "POST":
-        form = BookForm(request.POST)
-        if form.is_valid():
-            book = form.save()
-            return redirect('book_detail', pk=book.pk)
-    else:
-        form = BookForm()
-    return render(request, 'books/book_form.html', {'form': form})
+  if request.method == 'POST':
+    title = request.POST.get('title')
+    author = request.POST.get('author')
+    published_date = request.POST.get('published_date')
+    isbn = request.POST.get('isbn')
+
+    new_book = Book(title=title, author=author, published_date=published_date, isbn=isbn)
+    session.add(new_book)
+    session.commit()
+    
+    return redirect('book_list')
+  return render(request, 'books/book_form.html')
 
 def book_update(request, pk):
-    book = get_object_or_404(Book, pk = pk)
-    if request.method == "POST":
-        form = BookForm(request.POST, instance = book)
-        if form.is_valid():
-            book = form.save()
-            return redirect('book_detail', pk = book.pk)
-    else:
-        form = BookForm(instance = book)
-    return render(request, 'books/book_form.html', {'form': form})
+  book = session.query(Book).get(pk)
+  if request.method == 'POST':
+    book.title = request.POST.get('title')
+    book.author = request.POST.get('author')
+    book.published_date = request.POST.get('published_date')
+    book.isbn = request.POST.get('isbn')
+    
+    session.commit()
+    
+    return redirect('book_list')
+  return render(request, 'books/book_form.html', {'book': book})
 
 def book_delete(request, pk):
-    book = get_object_or_404(Book, pk = pk)
-    if request.method == "POST":
-        book.delete()
-        return redirect('book_list')
-    return render(request, 'books/book_confirm_delete.html', {'book': book})
+  book = session.query(Book).get(pk)
+  session.delete(book)
+  session.commit()
+  return redirect('book_list')

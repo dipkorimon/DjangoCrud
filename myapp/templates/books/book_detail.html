@@ -1,14 +1,13 @@
-{% extends 'base_generic.html' %}
-
-{% block content %}
-  <h2>{{ book.title }}</h2>
-  <p><strong>Author:</strong> {{ book.author }}</p>
-  <p><strong>Published Date:</strong> {{ book.published_date }}</p>
-  <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-  <a href="{% url 'book_update' book.pk %}">Edit</a>
-  <form method="post" action="{% url 'book_delete' book.pk %}">
-    {% csrf_token %}
-    <button type="submit">Delete</button>
-  </form>
-  <a href="{% url 'book_list' %}">Back to list</a>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Detail</title>
+</head>
+<body>
+    <h1>{{ book.title }}</h1>
+    <p>Author: {{ book.author }}</p>
+    <p>Published Date: {{ book.published_date }}</p>
+    <p>ISBN: {{ book.isbn }}</p>
+    <a href="{% url 'book_list' %}">Back to list</a>
+</body>
+</html>
